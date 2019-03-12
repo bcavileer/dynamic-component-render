@@ -1,15 +1,6 @@
 import React, { Component } from 'react'
 import './App.css'
-
-const Header = props => <header>{props.title}{props.children}</header>
-const Section = props => <section>{props.content}{props.children}</section>
-const Footer = props => <footer>{props.copyright}</footer>
-
-const componentManifest = {
-  'Header': Header,
-  'Section': Section,
-  'Footer': Footer,
-}
+import componentManifest from './components'
 
 const demoActivity = {
   components: [
@@ -34,35 +25,34 @@ const demoActivity = {
   ]
 }
 
+class Activity extends Component {
+  constructor (props) {
+    super(props)
+    this.renderComponent = this.renderComponent.bind(this)
+  }
+
+  renderComponent ({ component, props, children = [] }, index) {
+    const o = { component: componentManifest[component] }
+    return <o.component key={`component-${index}`} {...props}>{children.map(this.renderComponent)}</o.component>
+  }
+
+  render () {
+    const { components } = this.props.activity
+    return components.map(this.renderComponent)
+  }
+}
+
 class App extends Component {
   constructor (props) {
     super(props)
     this.state = { currentActivity: demoActivity }
-    this.renderComponent = this.renderComponent.bind(this)
-  }
-
-  renderActivity () {
-    const { currentActivity } = this.state
-    const { components } = currentActivity
-    return components.map(this.renderComponent)
-  }
-
-  renderComponent (componentDesc, index) {
-    const { component, props, children } = componentDesc
-    const properties = {
-      component: componentManifest[component],
-      key: `component-${index}`,
-      children: null
-    }
-    if (children) { properties.children = children.map(this.renderComponent) }
-    return <properties.component
-      key={`component-${properties.key}`}      {...props}    >      {properties.children}    </properties.component>
   }
 
   render () {
+    const { currentActivity } = this.state
     return (
       <div className="App">
-        {this.renderActivity()}
+        <Activity activity={currentActivity}/>
       </div>
     )
   }
