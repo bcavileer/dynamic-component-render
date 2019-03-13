@@ -39,9 +39,8 @@ activityDB.createActivity({
           {
             component: 'VehicleList',
             props: {
-              onClick: 'vehicle_details',
-              fetchVehicles: 'fetchVehicles',
-              loadVehicles: 'loadVehicles'
+              onLoad: 'fetchVehicles',
+              onClick: 'openVehicle',
             },
           }
         ],
@@ -51,7 +50,7 @@ activityDB.createActivity({
         props: { copyright: 'HSV 2018' },
       }
     ],
-    actions: ['fetchVehicles', 'loadVehicles', 'openVehicle'],
+    actions: ['fetchVehicles', 'openVehicle'],
     beforeActions: {},
     afterActions: {},
     defaultState: {
@@ -61,6 +60,9 @@ activityDB.createActivity({
       fetchVehicles: async () => {
         return { vehicles }
       },
+      openVehicle: async ({ vehicleId }) => {
+        return { nextActivity: 2, args: vehicleId }
+      }
     }
   },
 )

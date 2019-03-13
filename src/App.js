@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import './App.css'
-import { Activity} from './Activity'
+import { Activity } from './Activity'
 import axios from 'axios'
 import io from 'socket.io-client'
 import { ActivitySelector } from './ActivitySelector'
@@ -36,8 +36,8 @@ class App extends Component {
     this.setState({ activities, activity: defaultActivity, waiting: false })
   }
 
-  openActivity (id) {
-    axios.get(`/activities/${id}`).then(({ data: activity }) => {
+  openActivity (id, params = {}) {
+    axios.get(`/activities/${id}`, { params }).then(({ data: activity }) => {
       this.setState({ activity })
     })
   }
@@ -51,7 +51,7 @@ class App extends Component {
           currentActivity={activity}
           openActivity={this.openActivity}/>
 
-        {activity ? <Activity activity={activity} socket={this.socket}/> : null}
+        {activity ? <Activity activity={activity} openActivity={this.openActivity} socket={this.socket}/> : null}
       </div>
     )
   }

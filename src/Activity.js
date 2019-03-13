@@ -32,6 +32,10 @@ export class Activity extends Component {
   }
 
   activityUpdated ({ state }) {
+    if (state.nextActivity) {
+      return this.props.openActivity(state.nextActivity, state.args)
+    }
+
     // do we want to keep the previous state and merge in the changes?
     // or strictly accept the new state from the API?
     this.setState((prevState) => {
