@@ -3,12 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "axios": "^0.18.0",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
-    "react-scripts": "2.1.8"
+    "react-scripts": "2.1.8",
+    "socket.io-client": "^2.2.0"
   },
   "scripts": {
     "start": "react-scripts start",
+    "start-api": "nodemon api/api.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -16,10 +19,17 @@
   "eslintConfig": {
     "extends": "react-app"
   },
+  "proxy": "http://localhost:3001",
   "browserslist": [
     ">0.2%",
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "devDependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "nodemon": "^1.18.10",
+    "socket.io": "^2.2.0"
+  }
 }
