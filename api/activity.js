@@ -30,8 +30,8 @@ module.exports = class Activity {
       id: this.id,
       updateActivityReq,
       activity: this,
-      error: 'Action does not exist',
-      consoleMsg: 'Action does not exist'
+      error: `Action ${reducerName} does not exist`,
+      consoleMsg: `Action ${reducerName} does not exist`
     }
 
     const newState = await this.reducers[reducerName](args) // this is probably very insecure?
