@@ -1,58 +1,57 @@
 import React, { Component } from 'react'
 import './App.css'
-import componentManifest from './components'
-
-const demoActivity = {
-  components: [
-    {
-      component: 'Header',
-      props: { title: 'I am a header' },
-    },
-    {
-      component: 'Section',
-      props: { content: 'I am a section' },
-      children: [
-        {
-          component: 'Section',
-          props: { content: 'I am a nested section' },
-        }
-      ],
-    },
-    {
-      component: 'Footer',
-      props: { copyright: 'HSV 2018' },
-    }
-  ]
-}
-
-class Activity extends Component {
-  constructor (props) {
-    super(props)
-    this.renderComponent = this.renderComponent.bind(this)
-  }
-
-  renderComponent ({ component, props, children = [] }, index) {
-    const o = { component: componentManifest[component] }
-    return <o.component key={`component-${index}`} {...props}>{children.map(this.renderComponent)}</o.component>
-  }
-
-  render () {
-    const { components } = this.props.activity
-    return components.map(this.renderComponent)
-  }
-}
+import { Activity} from './Activity'
+import axios from 'axios'
+import io from 'socket.io-client'
+import { ActivitySelector } from './ActivitySelector'
 
 class App extends Component {
   constructor (props) {
     super(props)
-    this.state = { currentActivity: demoActivity }
+    this.state = { activities: [], activity: null }
+    this.socket = io.connect()
+
+    this.setInitialState = this.setInitialState.bind(this)
+    this.openActivity = this.openActivity.bind(this)
+    this.updateActivities = this.updateActivities.bind(this)
+  }
+
+  componentDidMount () {
+    axios.get('/activities')
+      .then(({ data }) => this.setInitialState(data))
+      .then(() => {
+        this.socket.on('activities_updated', this.updateActivities)
+        this.socket.on('missing_activity', () => {
+          axios.get('/activities')
+            .then(({ data }) => this.setInitialState(data))
+        })
+      })
+  }
+
+  updateActivities (activities) {
+    this.setState({ activities })
+  }
+
+  setInitialState ({ activities, defaultActivity }) {
+    this.setState({ activities, activity: defaultActivity, waiting: false })
+  }
+
+  openActivity (id) {
+    axios.get(`/activities/${id}`).then(({ data: activity }) => {
+      this.setState({ activity })
+    })
   }
 
   render () {
-    const { currentActivity } = this.state
+    const { activity, activities } = this.state
     return (
       <div className="App">
-        <Activity activity={currentActivity}/>
+        <ActivitySelector
+          activities={activities}
+          currentActivity={activity}
+          openActivity={this.openActivity}/>
+
+        {activity ? <Activity activity={activity} socket={this.socket}/> : null}
       </div>
     )
   }
